@@ -1,12 +1,11 @@
 # Loads the rest of Home Assistant config from subdirectories.
 default_config:
 
-frontend:
-  themes: !include_dir_merge_named themes
-
-automation: !include automations/
-script: !include scripts/
-scene: !include scenes/
+# automations/scenes are each a list of entries per file -> merge_list.
+# scripts are each a named mapping per file -> merge_named.
+automation: !include_dir_merge_list automations/
+script: !include_dir_merge_named scripts/
+scene: !include_dir_merge_list scenes/
 
 # Calls the Java backend when Shelly button automations fire.
 rest_command: !include rest_commands.yaml
