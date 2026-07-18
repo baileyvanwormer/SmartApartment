@@ -1,0 +1,2 @@
+# Placeholder scenes — create matching scenes in the Hue app or HA, then update entity IDs in .env
+# These are referenced by the Java backend via HA_SONOS_ENTITY / HA_HUE_SCENE_* variables.

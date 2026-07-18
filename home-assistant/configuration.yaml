@@ -1,0 +1,15 @@
+# Loads the rest of Home Assistant config from subdirectories.
+default_config:
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations/
+script: !include scripts/
+scene: !include scenes/
+
+# Calls the Java backend when Shelly button automations fire.
+rest_command: !include rest_commands.yaml
+
+# Optional: expose backend URL for templates (copy values into secrets.yaml).
+# backend_url: !secret backend_url

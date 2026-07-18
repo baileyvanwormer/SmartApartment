@@ -1,0 +1,35 @@
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    volumes:
+      - ./home-assistant:/config
+    environment:
+      - TZ=America/New_York
+    ports:
+      - "8123:8123"
+    networks:
+      - smartapartment
+
+  backend:
+    build: ./backend
+    container_name: smartapartment-backend
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - homeassistant
+    networks:
+      - smartapartment
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  smartapartment:
+    driver: bridge
