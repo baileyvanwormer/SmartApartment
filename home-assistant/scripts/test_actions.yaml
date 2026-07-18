@@ -1,0 +1,10 @@
+# Optional HA scripts for manual testing without the button.
+play_spotify_test:
+  alias: "Test — Play Spotify on Sonos"
+  sequence:
+    - action: rest_command.smart_apartment_button_single
+
+welcome_home_test:
+  alias: "Test — Welcome Home"
+  sequence:
+    - action: rest_command.smart_apartment_button_long

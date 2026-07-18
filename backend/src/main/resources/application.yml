@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: smart-apartment-backend
+  mvc:
+    problemdetails:
+      enabled: true
+
+smartapartment:
+  home-assistant:
+    url: ${HA_URL:http://homeassistant:8123}
+    token: ${HA_TOKEN:}
+    sonos-entity: ${HA_SONOS_ENTITY:media_player.living_room}
+    hue-scene-double: ${HA_HUE_SCENE_DOUBLE:scene.apartment_relax}
+    hue-scene-triple: ${HA_HUE_SCENE_TRIPLE:scene.apartment_party}
+    person-entity: ${HA_PERSON_ENTITY:person.bailey}
+  spotify:
+    playlist-url: ${SPOTIFY_PLAYLIST_URL:}
+  welcome-home:
+    arrival-window-minutes: ${WELCOME_HOME_ARRIVAL_WINDOW_MINUTES:15}
+    message: ${WELCOME_HOME_MESSAGE:Hello Bailey, welcome home}
+  security:
+    webhook-secret: ${BACKEND_WEBHOOK_SECRET:}

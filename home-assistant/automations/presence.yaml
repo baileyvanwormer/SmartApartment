@@ -1,0 +1,13 @@
+# Resets welcome-home state when Bailey leaves, so the next arrival can greet again.
+- id: smart_apartment_presence_away
+  alias: "Smart Apartment — Bailey Left Home"
+  description: "Reset welcome home greeting when person leaves"
+  triggers:
+    - trigger: state
+      entity_id: person.bailey
+      from: home
+      to: not_home
+  conditions: []
+  actions:
+    - action: rest_command.smart_apartment_presence_away
+  mode: single

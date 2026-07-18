@@ -1,0 +1,26 @@
+# Java
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+
+# Environment & secrets
+.env
+.env.example
+home-assistant/secrets.yaml
+home-assistant/.storage/
+
+# Home Assistant runtime
+home-assistant/.cloud/
+home-assistant/deps/
+home-assistant/home-assistant_v2.db
+home-assistant/home-assistant.log
+home-assistant/.HA_VERSION
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+.DS_Store
