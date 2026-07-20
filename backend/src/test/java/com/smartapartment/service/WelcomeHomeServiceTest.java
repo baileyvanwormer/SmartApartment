@@ -32,7 +32,7 @@ class WelcomeHomeServiceTest {
     @BeforeEach
     void setUp() {
         SmartApartmentProperties properties = new SmartApartmentProperties(
-                new SmartApartmentProperties.HomeAssistant(null, null, null, null, null, PERSON_ENTITY),
+                new SmartApartmentProperties.HomeAssistant(null, null, null, null, null, PERSON_ENTITY, null),
                 new SmartApartmentProperties.Spotify(null),
                 new SmartApartmentProperties.WelcomeHome(ARRIVAL_WINDOW_MINUTES, MESSAGE),
                 new SmartApartmentProperties.Security(null));

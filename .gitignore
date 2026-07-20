@@ -14,9 +14,13 @@ home-assistant/.storage/
 # Home Assistant runtime
 home-assistant/.cloud/
 home-assistant/deps/
-home-assistant/home-assistant_v2.db
-home-assistant/home-assistant.log
+home-assistant/.cache/
+home-assistant/blueprints/
+home-assistant/tts/
+home-assistant/home-assistant_v2.db*
+home-assistant/home-assistant.log*
 home-assistant/.HA_VERSION
+home-assistant/.ha_run.lock
 
 # IDE
 .idea/

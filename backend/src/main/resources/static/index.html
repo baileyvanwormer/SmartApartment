@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartApartment — Button Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <h1>SmartApartment</h1>
+    <p class="subtitle">Prototype button — mimics the Shelly BLU Button until the real hardware is wired up.</p>
+
+    <button id="smart-button" class="smart-button" aria-label="Smart apartment button">
+      <span id="button-label">PRESS</span>
+    </button>
+
+    <p id="status" class="status" aria-live="polite">Ready.</p>
+
+    <table class="legend">
+      <tbody>
+        <tr><td>Single</td><td>Play Spotify playlist on Sonos</td></tr>
+        <tr><td>Double</td><td>Hue scene — relax</td></tr>
+        <tr><td>Triple</td><td>Hue scene — party</td></tr>
+        <tr><td>Long (hold)</td><td>"Welcome home" on Sonos (once per arrival)</td></tr>
+      </tbody>
+    </table>
+
+    <details class="settings">
+      <summary>Testing options</summary>
+      <label class="field">
+        Webhook secret (only if <code>BACKEND_WEBHOOK_SECRET</code> is set)
+        <input id="webhook-secret" type="password" placeholder="leave blank if unset" autocomplete="off" />
+      </label>
+      <button id="reset-presence" type="button" class="secondary">
+        Reset welcome-home state
+      </button>
+      <p class="hint">
+        The long press only greets you if <code>HA_PERSON_ENTITY</code> is <code>home</code> and arrived within the
+        configured window. Use Home Assistant → Developer tools → States to set that entity to
+        <code>home</code> for testing, then use the reset button above to re-arm the greeting between tries.
+      </p>
+    </details>
+
+    <section class="log">
+      <h2>Activity</h2>
+      <ul id="log-list"></ul>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

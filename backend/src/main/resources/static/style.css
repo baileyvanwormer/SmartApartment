@@ -1,0 +1,196 @@
+:root {
+  color-scheme: light dark;
+  --bg: #0f1115;
+  --panel: #1a1d24;
+  --text: #e8eaed;
+  --muted: #9aa0a6;
+  --accent: #4f8cff;
+  --accent-active: #2f5fc0;
+  --danger: #e35555;
+  --ok: #3ecf8e;
+  --border: #2a2e37;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+main {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.6rem;
+}
+
+.subtitle {
+  margin: 0 0 2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.smart-button {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: none;
+  background: radial-gradient(circle at 35% 30%, #5c9bff, var(--accent) 70%);
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(79, 140, 255, 0.35);
+  transition: transform 80ms ease, box-shadow 80ms ease, background 150ms ease;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.smart-button.pressed {
+  transform: scale(0.95);
+  box-shadow: 0 4px 12px rgba(79, 140, 255, 0.25);
+  background: radial-gradient(circle at 35% 30%, #3f6fd6, var(--accent-active) 70%);
+}
+
+.smart-button.active-long {
+  background: radial-gradient(circle at 35% 30%, #ff8a65, var(--danger) 70%);
+  box-shadow: 0 4px 18px rgba(227, 85, 85, 0.45);
+}
+
+.status {
+  min-height: 1.4em;
+  margin: 1.25rem 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.status.ok { color: var(--ok); }
+.status.error { color: var(--danger); }
+.status.pending { color: var(--accent); }
+
+.legend {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.5rem;
+  font-size: 0.85rem;
+}
+
+.legend td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  color: var(--muted);
+}
+
+.legend td:first-child {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.settings {
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.settings summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.field {
+  display: block;
+  margin: 0.75rem 0;
+  color: var(--muted);
+}
+
+.field input {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.secondary {
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.secondary:hover {
+  border-color: var(--accent);
+}
+
+.hint {
+  color: var(--muted);
+  margin: 0.75rem 0 0;
+  line-height: 1.4;
+}
+
+.log {
+  text-align: left;
+}
+
+.log h2 {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+#log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+#log-list li {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+#log-list li.error {
+  border-color: var(--danger);
+}
+
+#log-list li .time {
+  color: var(--muted);
+  white-space: nowrap;
+}

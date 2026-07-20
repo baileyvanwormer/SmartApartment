@@ -69,7 +69,17 @@ cp home-assistant/secrets.yaml.example home-assistant/secrets.yaml
 docker compose up -d --build
 ```
 
+Both containers run with `network_mode: host` — required for Sonos/Hue/Shelly discovery,
+which relies on multicast traffic that Docker's default bridge network blocks. **On Docker
+Desktop for Mac or Windows**, this needs a fairly recent version with host networking
+enabled (Settings → Resources → Network → "Enable host networking"); see
+**[docs/SETUP.md](docs/SETUP.md)** if discovery doesn't find your devices even with that on.
+On Linux hosts (including a Raspberry Pi), host networking works natively — nothing to enable.
+
 Open Home Assistant at http://localhost:8123 and follow **[docs/SETUP.md](docs/SETUP.md)** for integration setup.
+
+Once HA integrations are wired up, open **http://localhost:8080** for a browser prototype of the physical button —
+click once/twice/three-times or press-and-hold to trigger the same actions the real Shelly BLU Button will.
 
 ## Configuration
 
@@ -80,7 +90,11 @@ Key variables:
 - `SPOTIFY_PLAYLIST_URL` — playlist to play on single press
 - `HA_SONOS_ENTITY` — Sonos media player entity in HA
 - `HA_HUE_SCENE_DOUBLE` / `HA_HUE_SCENE_TRIPLE` — Hue scene entity IDs
-- `HA_PERSON_ENTITY` — person entity for welcome-home logic (`person.bailey`)
+- `HA_PERSON_ENTITY` — person entity for welcome-home logic. HA names this after your
+  account (e.g. `person.jane_doe`, not just `person.jane`) — check
+  **Settings → People** for the actual entity ID rather than assuming the default
+- `HA_TTS_ENTITY` — TTS engine entity used to speak the welcome message
+  (defaults to `tts.google_translate_en_com`, which HA ships out of the box)
 - `WELCOME_HOME_MESSAGE` — TTS greeting text
 
 ## API endpoints

@@ -16,6 +16,7 @@ smartapartment:
     hue-scene-double: ${HA_HUE_SCENE_DOUBLE:scene.apartment_relax}
     hue-scene-triple: ${HA_HUE_SCENE_TRIPLE:scene.apartment_party}
     person-entity: ${HA_PERSON_ENTITY:person.bailey}
+    tts-entity: ${HA_TTS_ENTITY:tts.google_translate_en_com}
   spotify:
     playlist-url: ${SPOTIFY_PLAYLIST_URL:}
   welcome-home:
