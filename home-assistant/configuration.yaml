@@ -1,6 +1,11 @@
 # Loads the rest of Home Assistant config from subdirectories.
 default_config:
 
+# Without this, HA advertises Docker Desktop's internal VM address in generated media
+# URLs (TTS clips, etc.), which devices on the real LAN can't reach.
+homeassistant:
+  internal_url: !secret ha_internal_url
+
 # automations/scenes are each a list of entries per file -> merge_list.
 # scripts are each a named mapping per file -> merge_named.
 automation: !include_dir_merge_list automations/
@@ -12,3 +17,14 @@ rest_command: !include rest_commands.yaml
 
 # Optional: expose backend URL for templates (copy values into secrets.yaml).
 # backend_url: !secret backend_url
+
+# Sonos by IP, bypassing SSDP auto-discovery — needed on Docker Desktop for Mac, whose
+# bridge network doesn't pass through the multicast traffic discovery relies on.
+# advertise_addr tells Sonos where to send event callbacks, since the container's own
+# view of its address isn't reachable from the LAN. Remove this block if running on a
+# host where auto-discovery already works (e.g. a Raspberry Pi on the same network).
+sonos:
+  media_player:
+    hosts:
+      - !secret sonos_host
+    advertise_addr: !secret sonos_advertise_addr

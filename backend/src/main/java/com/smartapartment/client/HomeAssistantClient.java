@@ -40,7 +40,8 @@ public class HomeAssistantClient {
 
     public void speakOnSonos(String message) {
         Map<String, Object> body = new HashMap<>();
-        body.put("entity_id", properties.homeAssistant().sonosEntity());
+        body.put("entity_id", properties.homeAssistant().ttsEntity());
+        body.put("media_player_entity_id", properties.homeAssistant().sonosEntity());
         body.put("message", message);
 
         callService("tts", "speak", body);

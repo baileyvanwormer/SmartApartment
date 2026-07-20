@@ -15,7 +15,8 @@ public record SmartApartmentProperties(
             String sonosEntity,
             String hueSceneDouble,
             String hueSceneTriple,
-            String personEntity
+            String personEntity,
+            String ttsEntity
     ) {}
 
     public record Spotify(String playlistUrl) {}
