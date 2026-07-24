@@ -49,11 +49,12 @@ Edit `.env` with your values:
 | `HA_URL` | Leave as `http://localhost:8123` — both containers share host networking (see Step 2) |
 | `HA_TOKEN` | HA → Profile → Security → Long-Lived Access Tokens |
 | `HA_SONOS_ENTITY` | HA → Settings → Devices & services → Entities → your Sonos speaker. Check the actual entity ID after Step 3 — it's often not `media_player.living_room` |
-| `HA_HUE_SCENE_DOUBLE` | Entity ID for your relax scene (e.g. `scene.living_room_relax`) |
-| `HA_HUE_SCENE_TRIPLE` | Entity ID for your party scene |
+| `HA_HUE_SCENE_DOUBLE` | Entity ID for your button-2 scene (e.g. `scene.living_room_relax`) |
+| `HA_HUE_SCENE_TRIPLE` | Entity ID for your button-3 scene |
+| `HA_HUE_SCENE_LONG` | Entity ID for your button-4 scene (optional — leave blank to skip activating a scene on that button) |
 | `HA_PERSON_ENTITY` | HA names this after your account, not just your first name — check **Settings → People** for the real entity ID (e.g. `person.bailey_van_wormer`) after Step 3 |
 | `HA_TTS_ENTITY` | Defaults to `tts.google_translate_en_com`, which HA ships by default — only change if you've set up a different TTS integration |
-| `SPOTIFY_PLAYLIST_URL` | Full Spotify playlist URL |
+| `SPOTIFY_PLAYLISTS` | Comma-separated `Name\|url` pairs, e.g. `Chill\|https://open.spotify.com/playlist/xxxx,Party\|https://open.spotify.com/playlist/yyyy`. Button 1 plays whichever is currently selected; button 4 advances to the next one |
 | `BACKEND_WEBHOOK_SECRET` | Any random string — must match `secrets.yaml` |
 
 Set the same webhook secret in `home-assistant/secrets.yaml`:
@@ -181,7 +182,7 @@ replacing the placeholders already there.
 | Button 1, double tap | `/api/actions/button/skip` | Skip to next track |
 | Button 2 | `/api/actions/button/double` | Hue scene 1 |
 | Button 3 | `/api/actions/button/triple` | Hue scene 2 |
-| Button 4 | `/api/actions/button/long` | Hue scene 3 + welcome home (if just arrived) |
+| Button 4 | `/api/actions/button/long` | Hue scene 3 + switch to next playlist (speaks its name) |
 
 After editing `button_actions.yaml` or `rest_commands.yaml`, reload:
 
@@ -206,15 +207,16 @@ it still exercises the same endpoints correctly, just via a different (older) in
 remote now uses. If `BACKEND_WEBHOOK_SECRET` is set, expand **Testing options** on the page and paste it in
 first (stored only in your browser's local storage).
 
-The long-press "welcome home" greeting only fires if `HA_PERSON_ENTITY` is `home` and changed to `home` within
-the arrival window (the Hue scene on that same button fires regardless) — for testing, set that entity to
-`home` under **Developer tools → States**, then use the **Reset welcome-home state** button on the page between
-tries (it calls `presence/away` without requiring you to actually leave and come back).
+Note the welcome-home greeting isn't wired to any button right now — button 4 is used for
+playlist switching instead (see Step 4). The greeting logic and its `presence/away`
+reset endpoint still exist in the backend for a planned automatic-arrival trigger; the
+**Reset welcome-home state** button on the prototype page and the presence-away automation
+in `presence.yaml` are only meaningful once that's built.
 
 Other ways to trigger actions manually, in Home Assistant → **Developer tools → Services**, or scripts:
 
 - `script.play_spotify_test`
-- `script.welcome_home_test`
+- `script.next_playlist_test`
 
 Or curl the backend directly:
 
@@ -254,7 +256,8 @@ Set `HA_URL=http://localhost:8123` when running HA in Docker alongside.
 | Sonos commands intermittently time out | Battery-powered speakers (e.g. Sonos Roam) can drop Wi-Fi more often than plugged-in ones. Also check the speaker didn't get a new DHCP IP — a router-side DHCP reservation avoids this permanently |
 | Spotify won't play, `UPnP Error 800` in HA logs | Almost always a Sonos-side Spotify account issue, not HA/this project. Remove and re-add Spotify under Sonos app → Account → Content Services; also check for duplicate Spotify accounts linked there |
 | Spotify OAuth: Spotify says redirect URI is invalid | Your Spotify Developer Dashboard app must have `https://my.home-assistant.io/redirect/oauth` registered exactly — not your instance's own URL |
-| Welcome home skipped | Confirm your person entity (check the real ID under **Settings → People**, not necessarily `person.bailey`) is `home` and changed within the arrival window |
+| Welcome home never happens | It's not wired to any button currently (button 4 does playlist switching instead) — the logic still exists for a planned automatic-arrival trigger, but nothing calls it yet |
+| Button 4 doesn't switch playlists / says a name you don't expect | Check `SPOTIFY_PLAYLISTS` in `.env` is formatted as comma-separated `Name\|url` pairs; the currently-selected playlist only advances in-memory, so it resets to the first entry whenever the backend container restarts |
 | TTS call succeeds (HTTP 200) but no audio, music just pauses/resumes | Classic Docker Desktop for Mac symptom: HA is advertising its internal VM address (something like `192.168.65.x`) in the generated audio URL, which devices on your real LAN can't reach. Fix: set `ha_internal_url: http://<your-mac-lan-ip>:8123` in `secrets.yaml` and add `homeassistant: internal_url: !secret ha_internal_url` to `configuration.yaml`, then `docker compose restart homeassistant`. Verify by calling `POST /api/tts_get_url` and checking the returned URL's host matches your real LAN IP |
 
 ---

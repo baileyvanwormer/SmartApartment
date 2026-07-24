@@ -20,7 +20,7 @@ public record SmartApartmentProperties(
             String ttsEntity
     ) {}
 
-    public record Spotify(String playlistUrl) {}
+    public record Spotify(String playlists) {}
 
     public record WelcomeHome(int arrivalWindowMinutes, String message) {}
 

@@ -20,7 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ActionServiceTest {
 
-    private static final String PLAYLIST_URL = "https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M";
+    private static final String PLAYLISTS =
+            "Chill|https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M,Party|spotify:playlist:abc123";
     private static final String HUE_SCENE_LONG = "scene.living_room_living_room_button_4";
 
     @Mock
@@ -36,10 +37,11 @@ class ActionServiceTest {
         SmartApartmentProperties properties = new SmartApartmentProperties(
                 new SmartApartmentProperties.HomeAssistant(
                         null, null, null, null, null, HUE_SCENE_LONG, null, null),
-                new SmartApartmentProperties.Spotify(PLAYLIST_URL),
+                new SmartApartmentProperties.Spotify(PLAYLISTS),
                 new SmartApartmentProperties.WelcomeHome(15, null),
                 new SmartApartmentProperties.Security(null));
-        actionService = new ActionService(homeAssistantClient, welcomeHomeService, properties);
+        PlaylistService playlistService = new PlaylistService(properties);
+        actionService = new ActionService(homeAssistantClient, welcomeHomeService, playlistService, properties);
     }
 
     @Test
@@ -63,7 +65,7 @@ class ActionServiceTest {
     }
 
     @Test
-    void singlePressPlaysPlaylistWhenNothingIsPlaying() {
+    void singlePressPlaysCurrentPlaylistWhenNothingIsPlaying() {
         when(homeAssistantClient.getSonosState()).thenReturn("idle");
 
         var response = actionService.handleButtonPress(ButtonPressType.SINGLE);
@@ -106,11 +108,22 @@ class ActionServiceTest {
     }
 
     @Test
-    void longPressActivatesSceneRegardlessOfGreeting() {
-        when(welcomeHomeService.tryWelcomeHome()).thenReturn(false);
+    void longPressActivatesSceneAndAdvancesPlaylist() {
+        var response = actionService.handleButtonPress(ButtonPressType.LONG);
 
-        actionService.handleButtonPress(ButtonPressType.LONG);
-
+        assertThat(response.action()).isEqualTo("playlist_switch");
+        assertThat(response.message()).contains("Party");
         verify(homeAssistantClient).activateScene(HUE_SCENE_LONG);
+        verify(homeAssistantClient).speakOnSonos("Party");
+    }
+
+    @Test
+    void longPressThenSinglePressPlaysTheNewlySelectedPlaylist() {
+        actionService.handleButtonPress(ButtonPressType.LONG);
+        when(homeAssistantClient.getSonosState()).thenReturn("idle");
+
+        actionService.handleButtonPress(ButtonPressType.SINGLE);
+
+        verify(homeAssistantClient).playSpotifyPlaylist("spotify:playlist:abc123");
     }
 }
