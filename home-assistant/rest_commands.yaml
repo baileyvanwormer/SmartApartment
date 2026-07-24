@@ -1,33 +1,40 @@
 smart_apartment_button_single:
-  url: "http://backend:8080/api/actions/button/single"
+  url: "http://localhost:8080/api/actions/button/single"
+  method: POST
+  headers:
+    X-Webhook-Secret: !secret backend_webhook_secret
+  content_type: "application/json"
+
+smart_apartment_button_skip:
+  url: "http://localhost:8080/api/actions/button/skip"
   method: POST
   headers:
     X-Webhook-Secret: !secret backend_webhook_secret
   content_type: "application/json"
 
 smart_apartment_button_double:
-  url: "http://backend:8080/api/actions/button/double"
+  url: "http://localhost:8080/api/actions/button/double"
   method: POST
   headers:
     X-Webhook-Secret: !secret backend_webhook_secret
   content_type: "application/json"
 
 smart_apartment_button_triple:
-  url: "http://backend:8080/api/actions/button/triple"
+  url: "http://localhost:8080/api/actions/button/triple"
   method: POST
   headers:
     X-Webhook-Secret: !secret backend_webhook_secret
   content_type: "application/json"
 
 smart_apartment_button_long:
-  url: "http://backend:8080/api/actions/button/long"
+  url: "http://localhost:8080/api/actions/button/long"
   method: POST
   headers:
     X-Webhook-Secret: !secret backend_webhook_secret
   content_type: "application/json"
 
 smart_apartment_presence_away:
-  url: "http://backend:8080/api/actions/presence/away"
+  url: "http://localhost:8080/api/actions/presence/away"
   method: POST
   headers:
     X-Webhook-Secret: !secret backend_webhook_secret

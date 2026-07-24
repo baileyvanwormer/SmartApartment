@@ -1,59 +1,72 @@
-# Replace DEVICE_ID after pairing the Shelly BLU Button in Home Assistant.
-# Easiest path: Settings → Automations → Create → Device → Shelly BLU Button
-# and pick Single/Double/Triple/Long press, then set action to the matching
-# rest_command below.
+# Shelly BLU RC Button 4 (paired via BTHome through the Shelly BLU Gateway).
+# Each of the 4 physical buttons maps directly to one action — no multi-click
+# detection needed for buttons 2-4, since we have four discrete buttons instead
+# of one. Button 1 is the exception: it distinguishes single vs double tap using
+# the event entity's own event_type attribute (BTHome reports "press",
+# "double_press", "triple_press", "long_press", etc. on the same entity).
+# Entity IDs come from the BTHome device's event entities (Settings → Devices &
+# services → Entities, filter "button" — update these if your entity IDs differ).
 
 - id: smart_apartment_button_single
-  alias: "Smart Apartment — Button Single Press"
-  description: "Play Spotify playlist on Sonos"
+  alias: "Smart Apartment — Button 1 (single tap)"
+  description: "Play/pause/resume Spotify playlist on Sonos"
   triggers:
-    - trigger: device
-      device_id: REPLACE_WITH_YOUR_DEVICE_ID
-      domain: bthome
-      type: button_1
-      subtype: press
+    - trigger: state
+      entity_id: event.bthome_sensor_d37d_button_1
+      attribute: event_type
+      to: press
   conditions: []
   actions:
     - action: rest_command.smart_apartment_button_single
   mode: single
 
+- id: smart_apartment_button_single_skip
+  alias: "Smart Apartment — Button 1 (double tap)"
+  description: "Skip to next Spotify track"
+  triggers:
+    - trigger: state
+      entity_id: event.bthome_sensor_d37d_button_1
+      attribute: event_type
+      to: double_press
+  conditions: []
+  actions:
+    - action: rest_command.smart_apartment_button_skip
+  mode: single
+
 - id: smart_apartment_button_double
-  alias: "Smart Apartment — Button Double Press"
+  alias: "Smart Apartment — Button 2"
   description: "Activate Hue relax scene"
   triggers:
-    - trigger: device
-      device_id: REPLACE_WITH_YOUR_DEVICE_ID
-      domain: bthome
-      type: button_1
-      subtype: double_press
+    - trigger: state
+      entity_id: event.living_room_bthome_sensor_d37d_button_2
+      attribute: event_type
+      to: press
   conditions: []
   actions:
     - action: rest_command.smart_apartment_button_double
   mode: single
 
 - id: smart_apartment_button_triple
-  alias: "Smart Apartment — Button Triple Press"
+  alias: "Smart Apartment — Button 3"
   description: "Activate Hue party scene"
   triggers:
-    - trigger: device
-      device_id: REPLACE_WITH_YOUR_DEVICE_ID
-      domain: bthome
-      type: button_1
-      subtype: triple_press
+    - trigger: state
+      entity_id: event.living_room_bthome_sensor_d37d_button_3
+      attribute: event_type
+      to: press
   conditions: []
   actions:
     - action: rest_command.smart_apartment_button_triple
   mode: single
 
 - id: smart_apartment_button_long
-  alias: "Smart Apartment — Button Long Press"
-  description: "Welcome home greeting on Sonos"
+  alias: "Smart Apartment — Button 4"
+  description: "Activate Hue scene and welcome home greeting on Sonos"
   triggers:
-    - trigger: device
-      device_id: REPLACE_WITH_YOUR_DEVICE_ID
-      domain: bthome
-      type: button_1
-      subtype: long_press
+    - trigger: state
+      entity_id: event.living_room_bthome_sensor_d37d_button_4
+      attribute: event_type
+      to: press
   conditions: []
   actions:
     - action: rest_command.smart_apartment_button_long
