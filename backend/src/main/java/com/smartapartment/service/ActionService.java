@@ -30,6 +30,7 @@ public class ActionService {
     public ButtonActionResponse handleButtonPress(ButtonPressType pressType) {
         return switch (pressType) {
             case SINGLE -> playSpotify();
+            case SKIP -> skipTrack();
             case DOUBLE -> activateHueScene(properties.homeAssistant().hueSceneDouble(), "relax");
             case TRIPLE -> activateHueScene(properties.homeAssistant().hueSceneTriple(), "party");
             case LONG -> welcomeHome();
@@ -42,9 +43,26 @@ public class ActionService {
     }
 
     private ButtonActionResponse playSpotify() {
+        String state = homeAssistantClient.getSonosState();
+
+        if ("playing".equalsIgnoreCase(state)) {
+            homeAssistantClient.pauseSonos();
+            return new ButtonActionResponse("spotify_pause", "Paused Sonos");
+        }
+
+        if ("paused".equalsIgnoreCase(state)) {
+            homeAssistantClient.resumeSonos();
+            return new ButtonActionResponse("spotify_resume", "Resumed Sonos");
+        }
+
         String playlistUri = toSpotifyPlaylistUri(properties.spotify().playlistUrl());
         homeAssistantClient.playSpotifyPlaylist(playlistUri);
         return new ButtonActionResponse("spotify_play", "Playing playlist on Sonos");
+    }
+
+    private ButtonActionResponse skipTrack() {
+        homeAssistantClient.skipToNextTrack();
+        return new ButtonActionResponse("spotify_skip", "Skipped to next track");
     }
 
     private ButtonActionResponse activateHueScene(String sceneEntityId, String label) {
@@ -53,6 +71,8 @@ public class ActionService {
     }
 
     private ButtonActionResponse welcomeHome() {
+        homeAssistantClient.activateScene(properties.homeAssistant().hueSceneLong());
+
         boolean greeted = welcomeHomeService.tryWelcomeHome();
         if (greeted) {
             return new ButtonActionResponse("welcome_home", properties.welcomeHome().message());

@@ -15,6 +15,7 @@ smartapartment:
     sonos-entity: ${HA_SONOS_ENTITY:media_player.living_room}
     hue-scene-double: ${HA_HUE_SCENE_DOUBLE:scene.apartment_relax}
     hue-scene-triple: ${HA_HUE_SCENE_TRIPLE:scene.apartment_party}
+    hue-scene-long: ${HA_HUE_SCENE_LONG:}
     person-entity: ${HA_PERSON_ENTITY:person.bailey}
     tts-entity: ${HA_TTS_ENTITY:tts.google_translate_en_com}
   spotify:

@@ -33,6 +33,36 @@ public class HomeAssistantClient {
         callService("media_player", "play_media", body);
     }
 
+    public void pauseSonos() {
+        Map<String, Object> body = Map.of("entity_id", properties.homeAssistant().sonosEntity());
+        callService("media_player", "media_pause", body);
+    }
+
+    public void resumeSonos() {
+        Map<String, Object> body = Map.of("entity_id", properties.homeAssistant().sonosEntity());
+        callService("media_player", "media_play", body);
+    }
+
+    public void skipToNextTrack() {
+        Map<String, Object> body = Map.of("entity_id", properties.homeAssistant().sonosEntity());
+        callService("media_player", "media_next_track", body);
+    }
+
+    public String getSonosState() {
+        String entityId = properties.homeAssistant().sonosEntity();
+        try {
+            JsonNode state = restClient.get()
+                    .uri("/api/states/{entityId}", entityId)
+                    .retrieve()
+                    .body(JsonNode.class);
+
+            return state == null ? "unknown" : state.path("state").asText("unknown");
+        } catch (HttpClientErrorException.NotFound e) {
+            log.warn("Sonos entity not found in Home Assistant: {}", entityId);
+            return "unknown";
+        }
+    }
+
     public void activateScene(String sceneEntityId) {
         Map<String, Object> body = Map.of("entity_id", sceneEntityId);
         callService("scene", "turn_on", body);

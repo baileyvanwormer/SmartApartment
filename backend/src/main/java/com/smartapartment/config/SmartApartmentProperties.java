@@ -15,6 +15,7 @@ public record SmartApartmentProperties(
             String sonosEntity,
             String hueSceneDouble,
             String hueSceneTriple,
+            String hueSceneLong,
             String personEntity,
             String ttsEntity
     ) {}

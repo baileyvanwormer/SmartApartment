@@ -1,15 +1,18 @@
 # SmartApartment
 
-A smart apartment control system triggered by a **Shelly BLU Button**, orchestrated by a **Java backend** and **Home Assistant**.
+A smart apartment control system triggered by a **Shelly BLU RC Button 4** (4-button remote), orchestrated by a **Java backend** and **Home Assistant**.
 
 ## What it does
 
-| Button press | Action |
-|--------------|--------|
-| **Single** | Play a Spotify playlist on Sonos |
-| **Double** | Activate a Philips Hue scene |
-| **Triple** | Activate a second Hue scene |
-| **Long** | Say "Hello Bailey, welcome home" (first time after arriving) |
+Each of the remote's 4 physical buttons maps directly to one action — no multi-click detection needed.
+
+| Button | Action |
+|--------|--------|
+| **1** (single tap) | Play if idle, pause if playing, resume (not restart) if paused |
+| **1** (double tap) | Skip to the next track — only meaningful while something's playing |
+| **2** | Activate a Philips Hue scene |
+| **3** | Activate a second Hue scene |
+| **4** | Activate a third Hue scene, and say "Hello Bailey, welcome home" if you've just arrived (presence-gated; will later be triggered automatically on arrival instead of by button) |
 
 ## Architecture
 
@@ -50,13 +53,13 @@ A smart apartment control system triggered by a **Shelly BLU Button**, orchestra
 
 | Component | Choice |
 |-----------|--------|
-| Button | Shelly BLU Button |
+| Button | Shelly BLU RC Button 4 (paired in Bluetooth mode — it also supports Zigbee, which this project doesn't use) |
 | Gateway | Shelly BLU Gateway |
 | Hub | Home Assistant (Docker) |
 | Backend | Java 21 + Spring Boot 3 |
 | Music | Spotify Premium |
 | Speaker | Sonos |
-| Lights | Philips Hue |
+| Lights | Philips Hue Bridge + bulb |
 | Presence | iPhone via HA Companion app |
 
 ## Quick start
@@ -87,9 +90,9 @@ All secrets and entity IDs live in `.env` (backend) and `home-assistant/secrets.
 
 Key variables:
 
-- `SPOTIFY_PLAYLIST_URL` — playlist to play on single press
+- `SPOTIFY_PLAYLIST_URL` — playlist to play on button 1 (toggles play/pause if already playing)
 - `HA_SONOS_ENTITY` — Sonos media player entity in HA
-- `HA_HUE_SCENE_DOUBLE` / `HA_HUE_SCENE_TRIPLE` — Hue scene entity IDs
+- `HA_HUE_SCENE_DOUBLE` / `HA_HUE_SCENE_TRIPLE` / `HA_HUE_SCENE_LONG` — Hue scene entity IDs for buttons 2, 3, and 4 (`HA_HUE_SCENE_LONG` is optional — leave blank to skip activating a scene on button 4)
 - `HA_PERSON_ENTITY` — person entity for welcome-home logic. HA names this after your
   account (e.g. `person.jane_doe`, not just `person.jane`) — check
   **Settings → People** for the actual entity ID rather than assuming the default
@@ -103,10 +106,11 @@ Called by Home Assistant `rest_command` automations:
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/api/actions/button/single` | Play Spotify |
+| `POST` | `/api/actions/button/single` | Play / pause / resume Spotify |
+| `POST` | `/api/actions/button/skip` | Skip to next track |
 | `POST` | `/api/actions/button/double` | Hue scene 1 |
 | `POST` | `/api/actions/button/triple` | Hue scene 2 |
-| `POST` | `/api/actions/button/long` | Welcome home |
+| `POST` | `/api/actions/button/long` | Hue scene 3 + welcome home |
 | `POST` | `/api/actions/presence/away` | Reset welcome state |
 | `GET` | `/health` | Health check |
 

@@ -56,7 +56,7 @@ public class ActionController {
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "Invalid press type. Use single, double, triple, or long");
+                    "Invalid press type. Use single, double, triple, long, or skip");
         }
     }
 }

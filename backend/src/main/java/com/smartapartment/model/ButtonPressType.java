@@ -4,5 +4,6 @@ public enum ButtonPressType {
     SINGLE,
     DOUBLE,
     TRIPLE,
-    LONG
+    LONG,
+    SKIP
 }
