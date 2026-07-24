@@ -74,11 +74,10 @@ public class ActionService {
     }
 
     private ButtonActionResponse nextPlaylist() {
-        homeAssistantClient.activateScene(properties.homeAssistant().hueSceneLong());
-
         PlaylistService.PlaylistEntry playlist = playlistService.advanceToNext();
         homeAssistantClient.speakOnSonos(playlist.name());
-        return new ButtonActionResponse("playlist_switch", "Switched to playlist: " + playlist.name());
+        homeAssistantClient.playSpotifyPlaylist(toSpotifyPlaylistUri(playlist.url()));
+        return new ButtonActionResponse("playlist_switch", "Now playing: " + playlist.name());
     }
 
     static String toSpotifyPlaylistUri(String playlistUrl) {

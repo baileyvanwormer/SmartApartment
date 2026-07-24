@@ -108,22 +108,24 @@ class ActionServiceTest {
     }
 
     @Test
-    void longPressActivatesSceneAndAdvancesPlaylist() {
+    void longPressSpeaksNameAndStartsPlayingTheNewPlaylist() {
         var response = actionService.handleButtonPress(ButtonPressType.LONG);
 
         assertThat(response.action()).isEqualTo("playlist_switch");
         assertThat(response.message()).contains("Party");
-        verify(homeAssistantClient).activateScene(HUE_SCENE_LONG);
         verify(homeAssistantClient).speakOnSonos("Party");
+        verify(homeAssistantClient).playSpotifyPlaylist("spotify:playlist:abc123");
+        verify(homeAssistantClient, never()).activateScene(any());
     }
 
     @Test
-    void longPressThenSinglePressPlaysTheNewlySelectedPlaylist() {
+    void longPressThenSinglePressPlaysTheSameNewlySelectedPlaylist() {
         actionService.handleButtonPress(ButtonPressType.LONG);
         when(homeAssistantClient.getSonosState()).thenReturn("idle");
 
         actionService.handleButtonPress(ButtonPressType.SINGLE);
 
-        verify(homeAssistantClient).playSpotifyPlaylist("spotify:playlist:abc123");
+        verify(homeAssistantClient, org.mockito.Mockito.times(2))
+                .playSpotifyPlaylist("spotify:playlist:abc123");
     }
 }
