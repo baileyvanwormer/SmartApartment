@@ -61,7 +61,7 @@
 
 - id: smart_apartment_button_long
   alias: "Smart Apartment — Button 4"
-  description: "Activate Hue scene and welcome home greeting on Sonos"
+  description: "Activate Hue scene and switch to the next Spotify playlist"
   triggers:
     - trigger: state
       entity_id: event.living_room_bthome_sensor_d37d_button_4

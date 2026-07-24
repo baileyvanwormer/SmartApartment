@@ -16,6 +16,7 @@ home-assistant/.cloud/
 home-assistant/deps/
 home-assistant/.cache/
 home-assistant/blueprints/
+home-assistant/custom_components/
 home-assistant/tts/
 home-assistant/home-assistant_v2.db*
 home-assistant/home-assistant.log*

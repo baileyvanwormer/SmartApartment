@@ -8,11 +8,16 @@ Each of the remote's 4 physical buttons maps directly to one action — no multi
 
 | Button | Action |
 |--------|--------|
-| **1** (single tap) | Play if idle, pause if playing, resume (not restart) if paused |
+| **1** (single tap) | Play the currently selected playlist if idle, pause if playing, resume (not restart) if paused |
 | **1** (double tap) | Skip to the next track — only meaningful while something's playing |
 | **2** | Activate a Philips Hue scene |
 | **3** | Activate a second Hue scene |
-| **4** | Activate a third Hue scene, and say "Hello Bailey, welcome home" if you've just arrived (presence-gated; will later be triggered automatically on arrival instead of by button) |
+| **4** | Activate a third Hue scene, and switch to the next playlist in your rotation (speaks its name via TTS on Sonos so you know what just got selected) |
+
+There's also a "welcome home" greeting (presence-gated, speaks a message when you've just
+arrived) — it's not currently wired to any button, since the plan is to trigger it
+automatically on arrival instead. The logic and config for it (`WELCOME_HOME_MESSAGE`,
+`WELCOME_HOME_ARRIVAL_WINDOW_MINUTES`) are still in place, just unused for now.
 
 ## Architecture
 
@@ -47,7 +52,7 @@ Each of the remote's 4 physical buttons maps directly to one action — no multi
 ### Why this split?
 
 - **Home Assistant** handles device integrations natively (Shelly BTHome, Hue, Sonos, Spotify OAuth, iPhone tracking). Rebuilding these in Java would mean reimplementing OAuth, UPnP, and BLE.
-- **Java backend** (Spring Boot) owns business logic you can extend in code: welcome-home state, playlist URL from environment variables, future features.
+- **Java backend** (Spring Boot) owns business logic you can extend in code: welcome-home state, playlist rotation, action routing, future features.
 
 ## Stack
 
@@ -90,15 +95,18 @@ All secrets and entity IDs live in `.env` (backend) and `home-assistant/secrets.
 
 Key variables:
 
-- `SPOTIFY_PLAYLIST_URL` — playlist to play on button 1 (toggles play/pause if already playing)
+- `SPOTIFY_PLAYLISTS` — comma-separated `Name|url` pairs, e.g.
+  `Chill|https://open.spotify.com/playlist/xxxx,Party|https://open.spotify.com/playlist/yyyy`.
+  Button 1 plays whichever is currently selected; button 4 advances to the next one and
+  speaks its name
 - `HA_SONOS_ENTITY` — Sonos media player entity in HA
 - `HA_HUE_SCENE_DOUBLE` / `HA_HUE_SCENE_TRIPLE` / `HA_HUE_SCENE_LONG` — Hue scene entity IDs for buttons 2, 3, and 4 (`HA_HUE_SCENE_LONG` is optional — leave blank to skip activating a scene on button 4)
 - `HA_PERSON_ENTITY` — person entity for welcome-home logic. HA names this after your
   account (e.g. `person.jane_doe`, not just `person.jane`) — check
   **Settings → People** for the actual entity ID rather than assuming the default
-- `HA_TTS_ENTITY` — TTS engine entity used to speak the welcome message
+- `HA_TTS_ENTITY` — TTS engine entity used to speak the welcome message and playlist names
   (defaults to `tts.google_translate_en_com`, which HA ships out of the box)
-- `WELCOME_HOME_MESSAGE` — TTS greeting text
+- `WELCOME_HOME_MESSAGE` — TTS greeting text (not currently triggered by a button — see above)
 
 ## API endpoints
 
@@ -110,7 +118,7 @@ Called by Home Assistant `rest_command` automations:
 | `POST` | `/api/actions/button/skip` | Skip to next track |
 | `POST` | `/api/actions/button/double` | Hue scene 1 |
 | `POST` | `/api/actions/button/triple` | Hue scene 2 |
-| `POST` | `/api/actions/button/long` | Hue scene 3 + welcome home |
+| `POST` | `/api/actions/button/long` | Hue scene 3 + switch to next playlist (speaks its name) |
 | `POST` | `/api/actions/presence/away` | Reset welcome state |
 | `GET` | `/health` | Health check |
 

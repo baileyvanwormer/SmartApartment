@@ -16,14 +16,17 @@ public class ActionService {
 
     private final HomeAssistantClient homeAssistantClient;
     private final WelcomeHomeService welcomeHomeService;
+    private final PlaylistService playlistService;
     private final SmartApartmentProperties properties;
 
     public ActionService(
             HomeAssistantClient homeAssistantClient,
             WelcomeHomeService welcomeHomeService,
+            PlaylistService playlistService,
             SmartApartmentProperties properties) {
         this.homeAssistantClient = homeAssistantClient;
         this.welcomeHomeService = welcomeHomeService;
+        this.playlistService = playlistService;
         this.properties = properties;
     }
 
@@ -33,7 +36,7 @@ public class ActionService {
             case SKIP -> skipTrack();
             case DOUBLE -> activateHueScene(properties.homeAssistant().hueSceneDouble(), "relax");
             case TRIPLE -> activateHueScene(properties.homeAssistant().hueSceneTriple(), "party");
-            case LONG -> welcomeHome();
+            case LONG -> nextPlaylist();
         };
     }
 
@@ -55,9 +58,9 @@ public class ActionService {
             return new ButtonActionResponse("spotify_resume", "Resumed Sonos");
         }
 
-        String playlistUri = toSpotifyPlaylistUri(properties.spotify().playlistUrl());
-        homeAssistantClient.playSpotifyPlaylist(playlistUri);
-        return new ButtonActionResponse("spotify_play", "Playing playlist on Sonos");
+        PlaylistService.PlaylistEntry playlist = playlistService.current();
+        homeAssistantClient.playSpotifyPlaylist(toSpotifyPlaylistUri(playlist.url()));
+        return new ButtonActionResponse("spotify_play", "Playing " + playlist.name() + " on Sonos");
     }
 
     private ButtonActionResponse skipTrack() {
@@ -70,19 +73,17 @@ public class ActionService {
         return new ButtonActionResponse("hue_scene_" + label, "Activated scene " + sceneEntityId);
     }
 
-    private ButtonActionResponse welcomeHome() {
+    private ButtonActionResponse nextPlaylist() {
         homeAssistantClient.activateScene(properties.homeAssistant().hueSceneLong());
 
-        boolean greeted = welcomeHomeService.tryWelcomeHome();
-        if (greeted) {
-            return new ButtonActionResponse("welcome_home", properties.welcomeHome().message());
-        }
-        return new ButtonActionResponse("welcome_home_skipped", "Welcome home conditions not met");
+        PlaylistService.PlaylistEntry playlist = playlistService.advanceToNext();
+        homeAssistantClient.speakOnSonos(playlist.name());
+        return new ButtonActionResponse("playlist_switch", "Switched to playlist: " + playlist.name());
     }
 
     static String toSpotifyPlaylistUri(String playlistUrl) {
         if (playlistUrl == null || playlistUrl.isBlank()) {
-            throw new IllegalStateException("SPOTIFY_PLAYLIST_URL is not configured");
+            throw new IllegalStateException("Playlist URL is not configured");
         }
 
         if (playlistUrl.startsWith("spotify:playlist:")) {

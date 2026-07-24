@@ -19,7 +19,7 @@ smartapartment:
     person-entity: ${HA_PERSON_ENTITY:person.bailey}
     tts-entity: ${HA_TTS_ENTITY:tts.google_translate_en_com}
   spotify:
-    playlist-url: ${SPOTIFY_PLAYLIST_URL:}
+    playlists: ${SPOTIFY_PLAYLISTS:}
   welcome-home:
     arrival-window-minutes: ${WELCOME_HOME_ARRIVAL_WINDOW_MINUTES:15}
     message: ${WELCOME_HOME_MESSAGE:Hello Bailey, welcome home}

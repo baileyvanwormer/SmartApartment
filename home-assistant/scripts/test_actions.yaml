@@ -4,7 +4,7 @@ play_spotify_test:
   sequence:
     - action: rest_command.smart_apartment_button_single
 
-welcome_home_test:
-  alias: "Test — Welcome Home"
+next_playlist_test:
+  alias: "Test — Next Playlist (button 4)"
   sequence:
     - action: rest_command.smart_apartment_button_long
